@@ -1,0 +1,11 @@
+@import "./vendor/fonts/boxicons.css";
+@import "./vendor/css/core.css";
+@import "./vendor/css/theme-default.css";
+@import "./demo.css";
+@import "./../../libs/perfect-scrollbar/perfect-scrollbar.css";
+@import "./../../libs/apex-charts/apex-charts.css";
+
+/*@tailwind base;*/
+/*@tailwind components;*/
+/*@tailwind utilities;*/
+

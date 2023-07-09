@@ -5,36 +5,40 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Enums\Roles;
 
-class PermissionSeeder extends Seeder
-{
+class PermissionSeeder extends Seeder {
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+    public function run(): void {
+        app()[ \Spatie\Permission\PermissionRegistrar::class ]->forgetCachedPermissions();
 
-        $access = config('permission.access');
+        $access = config( 'permission.access' );
 
-        foreach ($access as $type) {
-            foreach ($type as $permission) {
-                Permission::create(['name' => $permission]);
+        foreach ( $access as $type ) {
+            foreach ( $type as $permission ) {
+                Permission::findOrCreate( $permission );
             }
         }
 
         // Customer
-        $role = Role::create(['name' => 'customer']);
-        $role->givePermissionTo(array_values($access['account']));
-        // or may be done by chaining
+        if ( ! Role::where( 'name', Roles::CUSTOMER->value )->exists() ) {
+            $role = Role::create( [ 'name' => Roles::CUSTOMER->value ] );
+            $role->givePermissionTo( array_values( $access['account'] ) );
+        }
 
-        $moderatorRoles = array_merge(
-            array_values($access['categories']),
-            array_values($access['products'])
-        );
-        $role = Role::create(['name' => 'moderator'])->givePermissionTo($moderatorRoles);
-
-        $role = Role::create(['name' => 'super-admin']);
-        $role->givePermissionTo(Permission::all());
+        if (!Role::where('name', Roles::MODERATOR->value)->exists()) {
+            $moderatorRoles = array_merge(
+                array_values($access['categories']),
+                array_values($access['products'])
+            );
+            $role = Role::create(['name' => Roles::MODERATOR->value])
+                        ->givePermissionTo($moderatorRoles);
+        }
+        if (!Role::where('name', Roles::ADMIN->value)->exists()) {
+            $role = Role::create(['name' => Roles::ADMIN->value]);
+            $role->givePermissionTo(Permission::all());
+        }
     }
 }

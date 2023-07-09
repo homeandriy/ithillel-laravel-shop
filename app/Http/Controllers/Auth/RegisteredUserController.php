@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\Roles;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
@@ -11,33 +12,33 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
-class RegisteredUserController extends Controller
-{
+class RegisteredUserController extends Controller {
     /**
      * Display the registration view.
      */
-    public function create(): View
-    {
-        return view('auth.register');
+    public function create(): View {
+        return view( 'auth.register' );
     }
 
     /**
      * Handle an incoming registration request.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
-    public function store(RegisterRequest $request): RedirectResponse
-    {
-        $fields = $request->validated();
-        $fields['password'] = Hash::make($fields['password']);
-        $user = User::create($fields);
+    public function store( RegisterRequest $request ): RedirectResponse {
+        $fields             = $request->validated();
+        $fields['password'] = Hash::make( $fields['password'] );
+        $user               = User::create( $fields );
 
-        event(new Registered($user));
+        $user->assignRole( Roles::CUSTOMER->value );
 
-        Auth::login($user);
+        event( new Registered( $user ) );
 
-        return redirect(RouteServiceProvider::HOME);
+        Auth::login( $user );
+
+        return redirect( RouteServiceProvider::HOME );
     }
 }
