@@ -6,7 +6,9 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/admin/app.css',
                 'resources/js/app.js',
+                'resources/js/admin/app.js',
             ],
             refresh: true,
         }),
