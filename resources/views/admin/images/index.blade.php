@@ -32,10 +32,12 @@
                                     <strong>{{ $image->id }}</strong></td>
                                 <td>
                                     <a href="{{ route('admin.images.edit', $image->id) }}">
-                                        <img src="{{ storage_path($image->path) }}" alt="Зображення в галереї">
+                                        <img src="{{ asset('/storage/' .$image->path) }}" alt="Зображення в галереї" width="300px">
                                     </a>
                                 <td>
-                                    {{ $image->imageable() }}
+                                    <a href="{{ route('admin.products.edit', $image->imageable()->getResults()) }}">
+                                      {{ $image->imageable()->getResults()->title }}
+                                    </a>
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">

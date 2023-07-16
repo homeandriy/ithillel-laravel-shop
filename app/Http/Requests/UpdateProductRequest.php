@@ -6,7 +6,7 @@ use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateProduct extends FormRequest
+class UpdateProductRequest extends FormRequest
 {
     protected string $className = Product::class;
     /**
@@ -28,11 +28,14 @@ class UpdateProduct extends FormRequest
 
         return [
             'title'       => [ 'required', 'string', 'min:2', 'max:255', Rule::unique( Product::class, 'title' )->ignore( $productId ) ],
+            'SKU'         => [ 'required', 'string', 'min:1', 'max:35', Rule::unique( Product::class, 'SKU' )->ignore( $productId )],
             'description' => [ 'nullable', 'string' ],
             'price'       => [ 'nullable', "numeric", "min:1" ],
             'discount'    => [ 'nullable', "numeric", "min:1", "max:100" ],
             'quantity'    => [ 'nullable', "numeric", "min:1" ],
-            'categories'  => [ 'required', "exists:App\Models\Category,id" ],
+            'thumbnail'   => [ 'nullable', 'image:jpeg,png'],
+            'images.*'    => [ 'nullable', 'image:jpeg,png'],
+            'categories.*'  => [ 'required', "exists:App\Models\Category,id" ],
         ];
     }
 }
