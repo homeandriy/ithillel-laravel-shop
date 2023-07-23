@@ -23,7 +23,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Назва</th>
-                                <th>Опис</th>
                                 <th>Категорії</th>
                                 <th>SKU</th>
                                 <th>Price</th>
@@ -36,7 +35,8 @@
                                 <tr>
                                     <td>
                                         <i class="fab fa-angular fa-lg text-danger me-3"></i>
-                                        <strong>{{ $product->id }}</strong></td>
+                                        <strong>{{ $product->id }}</strong>
+                                    </td>
                                     <td>
                                         <div class="d-flex gap-1 align-items-center">
                                             <div>
@@ -50,9 +50,6 @@
                                                 </a>
                                             </div>
                                         </div>
-
-                                    <td>
-                                        {{ $product->description }}
                                     </td>
                                     <td>{{ $product->categories()->implode('name', ", ") }}</td>
                                     <td><span class="badge bg-label-success me-1">{{ $product->SKU }}</span></td>
@@ -77,7 +74,6 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Назва</th>
-                                <th>Опис</th>
                                 <th>Категорії</th>
                                 <th>SKU</th>
                                 <th>Price</th>
