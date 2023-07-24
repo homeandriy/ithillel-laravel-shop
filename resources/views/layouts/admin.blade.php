@@ -51,6 +51,9 @@
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
                             <!-- Place this tag where you want the button to render. -->
                             <li class="nav-item lh-1 me-3">
+                                <a href="{{route('home')}}" target="_blank">Go to site</a>
+                            </li>
+                            <li class="nav-item lh-1 me-3">
                                 <h5>Welcome {{ Auth::user()->name }}</h5>
                             </li>
 

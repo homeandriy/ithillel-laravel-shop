@@ -55,7 +55,7 @@ class ProductsController extends Controller {
      * Update the specified resource in storage.
      */
     public function update( UpdateProductRequest $request, Product $product, ProductRepositoryContract $repository ) {
-        return $repository->update( $request, $product )
+        return $repository->update( $product, $request )
             ? redirect()->route( 'admin.products.edit', $product )
             : redirect()->back()->withInput();
     }
