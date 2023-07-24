@@ -41,7 +41,7 @@
                                         <div class="d-flex gap-1 align-items-center">
                                             <div>
                                                 <a href="{{ route('admin.products.edit', $product->id) }}">
-                                                    <img src="{{ $product->thumbnail }}" alt="{{ $product->title }}" width="150">
+                                                    <img src="{{ asset( '/storage/' . $product->thumbnail) }}" alt="{{ $product->title }}" width="150">
                                                 </a>
                                             </div>
                                             <div>

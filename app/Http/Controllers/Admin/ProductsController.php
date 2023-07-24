@@ -3,20 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateProduct;
-use App\Http\Requests\UpdateProduct;
+use App\Http\Requests\CreateProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Ramsey\Uuid\Uuid;
+use App\Repositories\Contracts\ProductRepositoryContract;
 
 class ProductsController extends Controller {
     /**
      * Display a listing of the resource.
      */
     public function index() {
-        $products = Product::orderByDesc( 'id' )->paginate( 5 );
+        $products = Product::with( 'categories' )->orderByDesc( 'id' )->paginate( 5 );
 
         return view(
             'admin.products.index',
@@ -36,23 +34,19 @@ class ProductsController extends Controller {
     /**
      * Store a newly created resource in storage.
      */
-    public function store( CreateProduct $request ) {
-        $fields         = $request->validated();
-        $fields['slug'] = Str::of( $fields['title'] )->slug( '-' );
-        $fields['SKU']  = md5($fields['slug']);
-        $fields['thumbnail']  = 'no-image.jpg';
-//        dd($fields);
-        $product = Product::create( $fields );
-        $product->categories()->attach($fields['categories']);
-        return redirect()->route( 'admin.products.index' );
+    public function store( CreateProductRequest $request, ProductRepositoryContract $repository ) {
+
+        return $repository->create( $request )
+            ? redirect()->route( 'admin.products.index' )
+            : redirect()->back()->withInput();
     }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit( Product $product ) {
-        $categories = Category::all();
-        $productCategoriesIds = $product->categories()->select('category_id')->pluck('category_id');
+        $categories           = Category::all();
+        $productCategoriesIds = $product->categories()->select( 'category_id' )->pluck( 'category_id' );
 
         return view( 'admin.products.edit', compact( 'product', 'categories', 'productCategoriesIds' ) );
     }
@@ -60,10 +54,10 @@ class ProductsController extends Controller {
     /**
      * Update the specified resource in storage.
      */
-    public function update( UpdateProduct $request, Product $product ) {
-        $product->updateOrFail( $request->validated() );
-
-        return redirect()->route( 'admin.products.edit', $product );
+    public function update( UpdateProductRequest $request, Product $product, ProductRepositoryContract $repository ) {
+        return $repository->update( $request, $product )
+            ? redirect()->route( 'admin.products.edit', $product )
+            : redirect()->back()->withInput();
     }
 
     /**
