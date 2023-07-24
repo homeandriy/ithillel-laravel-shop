@@ -1,3 +1,17 @@
+@import "vendor/gicons.css";
+@import "plugins/animate.css";
+@import "plugins/animate.css";
+@import "plugins/swiper-bundle.min.css";
+@import "plugins/bootstrap.css";
+@import "plugins/bootstrap-select.min.css";
+@import "plugins/owl.carousel.min.css";
+@import "plugins/owl.theme.default.min.css";
+@import "plugins/slick.min.css";
+@import "plugins/nouislider.css";
+@import "demo-1.css";
+@import "responsive.css";
+@import "style.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

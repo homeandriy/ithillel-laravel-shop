@@ -13,16 +13,7 @@
             <span class="text-muted fw-light"><a href="{{ route('admin.products.index') }}">Товари</a></span>/
             Редагування {{ $product->title }}
         </h4>
-        @if($errors->any())
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="alert alert-danger" role="alert">
-                        {{ implode('', $errors->all('<div>:message</div>')) }}
-                    </div>
-                </div>
-            </div>
 
-        @endif
         <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -113,7 +104,17 @@
                             <div class="mb-4 images-wrapper">
                                 @if($product->images()->count())
                                     @foreach($product->images()->getResults() as $image)
-                                        <div class="mb-4"><img src="{{ asset('/storage/' . $image->path) }}" style="width: 100%" /></div>
+                                        <div class="mb-4" style="position: relative">
+                                            <img src="{{ $image->url }}" class="card-img-top" style="width: 100%; margin: 0 auto; display: block;" alt="{{$product->title}}">
+                                            <x-button href="#"
+                                                      color-type="danger"
+                                                      class="py-1 px-2 remove-image"
+                                                      style="position: absolute; top: 10px; right: 10px; height: 40px; width: 40px; "
+                                                      data-route="{{ route('ajax.images.delete', $image) }}"
+                                            >
+                                                <i class="bx bx-trash-alt" aria-hidden="true"></i>
+                                            </x-button>
+                                        </div>
                                     @endforeach
                                 @endif
                             </div>

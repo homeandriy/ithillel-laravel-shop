@@ -7,92 +7,91 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use App\Repositories\Contracts\ImageRepositoryContract;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class ProductRepository implements Contracts\ProductRepositoryContract {
-    public function __construct(
-        protected ImageRepositoryContract $imageRepository
-    ) {
-    }
+class ProductRepository implements Contracts\ProductRepositoryContract
+{
+    public function __construct(protected ImageRepositoryContract $imageRepository){}
 
-    public function create( CreateProductRequest $request ): Product|false {
+    public function create(CreateProductRequest $request): Product|false
+    {
         try {
             DB::beginTransaction();
-            $data               = $this->formatRequestData( $request );
-            $data['attributes'] = array_merge(
-                $data['attributes'],
-                [ 'slug' => Str::of( $data['attributes']['title'] )->slug( '-' )->value() ]
-            );
 
-            ksort( $data['attributes'] );
-            $product = Product::create( $data['attributes'] );
-            $this->setCategories( $product, $data['categories'] );
+            $data = $this->formatRequestData($request);
+            $data['attributes'] = $this->addSlugToAttributes($data['attributes']);
+            ksort($data['attributes']);
+            $product = Product::create($data['attributes']);
+            $this->setProductData($product, $data);
 
-            $this->imageRepository->attach(
-                $product,
-                'images',
-                $data['attributes']['images'],
-                $data['attributes']['slug']
-            );
             DB::commit();
 
             return $product;
-        } catch ( \Exception $exception ) {
+        } catch (\Exception $exception) {
             DB::rollBack();
-            logs()->warning( $exception );
+            logs()->warning($exception);
+            return false;
+        }
+    }
+    public function update(Product $product, UpdateProductRequest $request): bool
+    {
+        try {
+            \DB::beginTransaction();
 
+            $data = $this->formatRequestData($request);
+
+            if ($data['attributes']['title'] && $data['attributes']['title'] !== $product->title) {
+                $data['attributes'] = $this->addSlugToAttributes($data['attributes']);
+            }
+
+            $product->update($data['attributes']);
+            $this->setProductData($product, $data);
+
+            \DB::commit();
+
+            return true;
+        } catch (\Exception $exception) {
+            \DB::rollBack();
+            logs()->warning($exception);
             return false;
         }
     }
 
-    protected function formatRequestData( CreateProductRequest|UpdateProductRequest $request ): array {
+    protected function formatRequestData(CreateProductRequest|UpdateProductRequest $request): array
+    {
         return [
-            'attributes' => collect( $request->validated() )->except( [ 'categories' ] )->toArray(),
-            'categories' => $request->get( 'categories', [] )
+            'attributes' => collect($request->validated())->except(['categories'])->toArray(),
+            'categories' => $request->get('categories', [])
         ];
     }
 
-    protected function setCategories( Product $product, array $categories = [] ) {
-        if ( ! empty( $categories ) ) {
-            $product->categories()->attach( $categories );
+    protected function setProductData(Product $product, array $data)
+    {
+        $this->setCategories($product, $data['categories']);
+        $this->attachImages($product, $data['attributes']['images'] ?? []);
+    }
+
+    public function setCategories(Product $product, array $categories = []): void
+    {
+        if ($product->categories()->exists()) {
+            $product->categories()->detach();
+        }
+
+        if (!empty($categories)) {
+            $product->categories()->attach($categories);
         }
     }
 
-    public function update( UpdateProductRequest $request, Product $product ): Product|false {
-        try {
-            DB::beginTransaction();
-            $data               = $this->formatRequestData( $request );
-            $data['attributes'] = array_merge(
-                $data['attributes'],
-                [ 'slug' => Str::of( $data['attributes']['title'] )->slug( '-' )->value() ]
-            );
+    protected function attachImages(Product $product, array $images = [])
+    {
+        $this->imageRepository->attach($product, 'images', $images, $product->slug);
+    }
 
-            ksort( $data['attributes'] );
-            if($request->file('thumbnail') !== null) {
-                Storage::delete($product->thumbnail);
-            }
-            $product->updateOrFail( $data['attributes'] );
-            $this->setCategories( $product, $data['categories'] );
-
-            if( $request->file( 'images' ) !== null ) {
-                $this->imageRepository->detach($product, 'images');
-                $this->imageRepository->attach(
-                    $product,
-                    'images',
-                    $data['attributes']['images'],
-                    $data['attributes']['slug']
-                );
-            }
-
-            DB::commit();
-
-            return $product;
-        } catch ( \Exception $exception ) {
-            DB::rollBack();
-            logs()->warning( $exception );
-
-            return false;
-        }
+    protected function addSlugToAttributes(array $attributes): array
+    {
+        return array_merge(
+            $attributes,
+            ['slug' => Str::of($attributes['title'])->slug('-')->value()]
+        );
     }
 }
