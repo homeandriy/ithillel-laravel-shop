@@ -27,6 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('checkout', \App\Http\Controllers\CheckoutController::class)->name('checkout');
+    Route::get('orders/{order}/paypal/thank-you', [\App\Http\Controllers\Orders\ThankYouPageController::class, 'paypal'])->name('payment.thankyou');
+
     Route::name('wishlist.')->prefix('wishlist')->group(function (){
         Route::get('/', [\App\Http\Controllers\WishlistController::class, 'index'])->name('index');
         Route::post('{product}', [\App\Http\Controllers\WishlistController::class, 'add'])->name('add');
@@ -42,11 +44,20 @@ Route::name('admin.')->prefix('admin')->middleware(['role:admin|moderator'])->gr
     Route::resource('categories', \App\Http\Controllers\Admin\CategoriesController::class)->except(['show']);
     Route::resource('images', \App\Http\Controllers\Admin\ImagesController::class)->except(['show']);
     Route::resource('users', \App\Http\Controllers\Admin\UsersController::class)->except(['show']);
+    Route::resource('orders', \App\Http\Controllers\Admin\OrdersController::class)->except(
+        [
+            'create', 'store', 'destroy', 'show'
+        ]
+    );
 });
 
 Route::name('ajax.')->middleware('auth')->prefix('ajax')->group(function() {
     Route::group(['role:admin|moderator'], function() {
         Route::delete('images/{image}', \App\Http\Controllers\Ajax\RemoveImageController::class)->name('images.delete');
+    });
+    Route::prefix('paypal')->name('paypal.')->group(function() {
+        Route::post('order/create', [\App\Http\Controllers\Ajax\Payments\PaypalController::class, 'create'])->name('orders.create');
+        Route::post('order/{orderId}/capture', [\App\Http\Controllers\Ajax\Payments\PaypalController::class, 'capture'])->name('orders.capture');
     });
 });
 

@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/css/admin/app.css',
                 'resources/js/app.js',
                 'resources/js/admin/app.js',
+                'resources/js/payment/paypal.js',
             ],
             refresh: true,
         }),
