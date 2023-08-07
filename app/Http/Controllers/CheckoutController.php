@@ -11,6 +11,6 @@ class CheckoutController extends Controller
      */
     public function __invoke(Product $product)
     {
-        return view('checkout', compact('product'));
+        return view('checkout.index', compact('product'));
     }
 }

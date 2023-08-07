@@ -71,7 +71,10 @@
     <ul class="menu-inner py-1">
         <!-- Dashboard -->
         <x-side-nav-link link="{{ route('admin.dashboard') }}" icon="bx-home-circle" name="Dashboard" />
-
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Замовлення</span>
+            <x-side-nav-link link="{{ route('admin.orders.index') }}" icon="bx-cart-alt" name="Замовлення" />
+        </li>
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Категорії</span>
             <x-side-nav-link link="{{ route('admin.categories.index') }}" icon="bx-category-alt" name="Категорії" />

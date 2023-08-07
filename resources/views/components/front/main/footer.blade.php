@@ -148,6 +148,7 @@
     </div>
 </footer>
 <!-- Footer Area End -->
-
+<script src="{{ asset('js/iziToast.js') }}"></script>
+@include('vendor.lara-izitoast.toast')
 <!-- Back to top  -->
 <a class="gi-back-to-top"></a>

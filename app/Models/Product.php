@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * App\Models\Product
@@ -130,5 +131,9 @@ class Product extends Model implements Buyable {
     public function getBuyableWeight($options = null)
     {
         return 0;
+    }
+    public function scopeAvailable(Builder $query): Builder
+    {
+        return $query->where('quantity', '>', 0);
     }
 }
