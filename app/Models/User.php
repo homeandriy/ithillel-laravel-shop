@@ -49,6 +49,10 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken( $value )
  * @method static \Illuminate\Database\Eloquent\Builder|User whereSurname( $value )
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt( $value )
+ * @property string|null $telegram_id
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
+ * @property-read int|null $orders_count
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereTelegramId($value)
  * @mixin \Eloquent
  */
 class User extends Authenticatable {

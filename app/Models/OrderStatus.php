@@ -62,4 +62,8 @@ class OrderStatus extends Model {
     protected function statusQuery( Builder $query, \App\Enums\OrderStatus $enum ): Builder {
         return $query->where( 'name', $enum->value );
     }
+    public function getName(): string
+    {
+        return $this->name->value;
+    }
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * App\Models\Order
@@ -46,10 +47,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereUserId( $value )
  * @property string $vendor_order_id
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereVendorOrderId( $value )
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \App\Models\Transaction|null $transaction
  * @mixin \Eloquent
  */
 class Order extends Model {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'status_id',

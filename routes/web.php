@@ -15,6 +15,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', \App\Http\Controllers\HomeController::class)->name('home');
+Route::get('invoice', function() {
+    $order = \App\Models\Order::all()->last();
+    /** @var \App\Services\InvoicesService $invoiceService */
+    $invoiceService = app()->make(\App\Services\Contracts\InvoicesServiceContract::class);
+//    dd($invoiceService->generate($order)->url());
+    \App\Events\OrderCreated::dispatch($order);
+});
+
+Route::name('callbacks.')->prefix('callback')->middleware(['role:admin|moderator|customer'])->group(function () {
+    Route::get('telegram', \App\Http\Controllers\Callbacks\TelegramController::class)->name('telegram');
+});
 Route::resource('products', \App\Http\Controllers\ProductsController::class)->only(['index', 'show'])->scoped(['product' => 'slug']);
 Route::resource('categories', \App\Http\Controllers\CategoriesController::class)->only(['index', 'show'])->scoped(['category' => 'slug']);
 
