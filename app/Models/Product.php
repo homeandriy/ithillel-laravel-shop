@@ -45,6 +45,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereThumbnail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
+ * @method static Builder|Product available()
  * @mixin \Eloquent
  */
 class Product extends Model implements Buyable {
