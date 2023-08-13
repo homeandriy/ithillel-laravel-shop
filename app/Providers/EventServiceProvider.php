@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\OrderCreated;
+use App\Events\OrderStatusChange;
 use App\Listeners\OrderCreatedListener;
+use App\Listeners\OrderStatusChangeListener;
 use App\Models\Image;
 use App\Models\Product;
 use App\Observers\ImageObserver;
@@ -29,6 +31,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         OrderCreated::class => [
             OrderCreatedListener::class
+        ],
+        OrderStatusChange::class => [
+            OrderStatusChangeListener::class
         ]
     ];
 

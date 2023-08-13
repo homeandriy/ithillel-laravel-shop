@@ -24,7 +24,6 @@
                             Введіть дані товару
                         </h5>
                         <div class="card-body">
-
                                 <div>
                                     <label class="form-label" for="product-name">Title</label>
                                     <input type="text" class="form-control form-control-lg" id="product-name" placeholder="Title" name="title" aria-describedby="product-name-helper" value="{{ $product->title }}">
