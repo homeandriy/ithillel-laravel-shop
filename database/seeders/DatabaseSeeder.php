@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             [
                 PermissionSeeder::class,
                 UsersSeeder::class,
+                ProductAttributesSeeder::class,
                 CategoryProductSeeder::class,
                 OrderStatusesSeeder::class
             ]

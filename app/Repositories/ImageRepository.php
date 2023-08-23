@@ -12,7 +12,6 @@ class ImageRepository implements Contracts\ImageRepositoryContract
         if (! method_exists($model, $relation)) {
             throw new \Exception($model::class . " does not have a {$relation} relation");
         }
-
         if (!empty($images)) {
             foreach ($images as $image) {
                 // $product->images()

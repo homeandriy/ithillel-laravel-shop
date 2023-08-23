@@ -2,8 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Attributes\Brand;
+use App\Models\Attributes\Color;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -18,6 +20,7 @@ class ProductFactory extends Factory {
     public function definition(): array {
         $title = fake()->unique()->words(rand(1, 3), true);
         $slug = Str::of($title)->slug('-');
+        $brand = Brand::all()->random();
 
         return [
             'title' => $title,
@@ -27,7 +30,26 @@ class ProductFactory extends Factory {
             'price' => fake()->randomFloat(2, 10, 100),
             'discount' => rand(0, 90),
             'quantity' => rand(0, 15),
-            'thumbnail' => fake()->image()
+            'thumbnail' => fake()->imageUrl(),
+            'brand_id' => $brand->id
         ];
+    }
+    public function withColor()
+    {
+        return $this->state(function (array $attributes) {
+            return $attributes;
+        })->afterCreating(function(Product $product) {
+            $colors = Color::all()->random(rand(2, 4));
+            $colors->each(function(Color $color) use ($product) {
+                $product->colors()->attach($color, [
+                    'price' => fake()->randomFloat(
+                        2,
+                        ($product->price - 5),
+                        ($product->price + 5)
+                    ),
+                    'quantity' => rand(0, 15)
+                ]);
+            });
+        });
     }
 }

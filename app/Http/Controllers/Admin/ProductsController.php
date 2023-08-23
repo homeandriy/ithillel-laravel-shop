@@ -5,16 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\Attributes\Brand;
+use App\Models\Attributes\Color;
 use App\Models\Category;
 use App\Models\Product;
 use App\Repositories\Contracts\ProductRepositoryContract;
+use Illuminate\Http\Request;
 
 class ProductsController extends Controller {
     /**
      * Display a listing of the resource.
      */
-    public function index() {
-        $products = Product::with( 'categories' )->orderByDesc( 'id' )->paginate( 5 );
+    public function index(Request $request, ProductRepositoryContract $repository) {
+        $products = Product::with( 'categories', 'colors', 'brand' )->orderByDesc( 'id' )->paginate( 5 );
 
         return view(
             'admin.products.index',
@@ -27,8 +30,10 @@ class ProductsController extends Controller {
      */
     public function create() {
         $categories = Category::all();
+        $brands = Brand::all();
+        $colors = Color::all();
 
-        return view( 'admin.products.create', compact( 'categories' ) );
+        return view( 'admin.products.create', compact( 'categories', 'brands', 'colors' ) );
     }
 
     /**
@@ -47,8 +52,10 @@ class ProductsController extends Controller {
     public function edit( Product $product ) {
         $categories           = Category::all();
         $productCategoriesIds = $product->categories()->select( 'category_id' )->pluck( 'category_id' );
+        $brands = Brand::all();
+        $colors = Color::all();
 
-        return view( 'admin.products.edit', compact( 'product', 'categories', 'productCategoriesIds' ) );
+        return view( 'admin.products.edit', compact( 'product', 'categories', 'productCategoriesIds', 'brands', 'colors' ) );
     }
 
     /**
@@ -68,5 +75,8 @@ class ProductsController extends Controller {
         $product->deleteOrFail();
 
         return redirect()->route( 'admin.products.index' );
+    }
+    public function updateVariation(Request $request, Product $product) {
+        dd($request);
     }
 }

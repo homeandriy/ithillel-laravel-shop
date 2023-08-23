@@ -76,6 +76,16 @@
             <x-side-nav-link link="{{ route('admin.orders.index') }}" icon="bx-cart-alt" name="Замовлення" />
         </li>
         <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Бренди</span>
+            <x-side-nav-link link="{{ route('admin.brands.index') }}" icon="bx-category-alt" name="Бренди" />
+            <x-side-nav-link link="{{ route('admin.brands.create') }}" icon="bx-add-to-queue" name="Створити Бренд" />
+        </li>
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Кольори</span>
+            <x-side-nav-link link="{{ route('admin.colors.index') }}" icon="bx-category-alt" name="Всі кольори" />
+            <x-side-nav-link link="{{ route('admin.colors.create') }}" icon="bx-add-to-queue" name="Створити Колір" />
+        </li>
+        <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Категорії</span>
             <x-side-nav-link link="{{ route('admin.categories.index') }}" icon="bx-category-alt" name="Категорії" />
             <x-side-nav-link link="{{ route('admin.categories.create') }}" icon="bx-add-to-queue" name="Створити категорію" />

@@ -24,6 +24,8 @@
                                 <th>ID</th>
                                 <th>Назва</th>
                                 <th>Категорії</th>
+                                <th>Бренд</th>
+                                <th>Кольори</th>
                                 <th>SKU</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
@@ -41,7 +43,7 @@
                                         <div class="d-flex gap-1 align-items-center">
                                             <div>
                                                 <a href="{{ route('admin.products.edit', $product->id) }}">
-                                                    <img src="{{ asset( '/storage/' . $product->thumbnail) }}" alt="{{ $product->title }}" width="150">
+                                                    <img src="{{ $product->thumbnailUrl }}" alt="{{ $product->title }}" width="150">
                                                 </a>
                                             </div>
                                             <div>
@@ -52,6 +54,16 @@
                                         </div>
                                     </td>
                                     <td>{{ $product->categories()->implode('name', ", ") }}</td>
+                                    <td>{{ $product->brand->name }}</td>
+                                    <td>
+                                        @if($product->colors()->count())
+                                            @foreach($product->colors as $color)
+                                                <div
+                                                    style="width: 20px; height: 20px; background-color: {{$color->hex}}; border: 1px solid #0d1116; border-radius: 50%"
+                                                ></div>
+                                            @endforeach
+                                        @endif
+                                    </td>
                                     <td><span class="badge bg-label-success me-1">{{ $product->SKU }}</span></td>
                                     <td>
                                         <x-product-price-admin :product="$product"></x-product-price-admin>
@@ -75,6 +87,8 @@
                                 <th>ID</th>
                                 <th>Назва</th>
                                 <th>Категорії</th>
+                                <th>Бренд</th>
+                                <th>Кольори</th>
                                 <th>SKU</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
