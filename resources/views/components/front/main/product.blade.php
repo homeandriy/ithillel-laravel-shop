@@ -17,7 +17,7 @@
                         @if($product->images->count())
                             <img class="hover-image" src="{{ $product->images()->first()->url }}" alt="{{ $product->title }}">
                         @else
-                            <img class="main-image" src="{{ $product->thumbnailUrl }}" alt="{{ $product->title }}">
+                            <img class="hover-image" src="{{ $product->thumbnailUrl }}" alt="{{ $product->title }}">
                         @endif
                     </a>
                     <span class="flags">

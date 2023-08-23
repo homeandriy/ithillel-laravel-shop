@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Attributes\Brand;
+use App\Models\Attributes\Color;
 use App\Services\FileStorageService;
 use Gloudemans\Shoppingcart\Contracts\Buyable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -46,6 +50,12 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
  * @method static Builder|Product available()
+ * @property-read Brand|null $brand
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Color> $colors
+ * @property-read int|null $colors_count
+ * @method static Builder|Product withColor(int $colorId)
+ * @property int|null $brand_id
+ * @method static Builder|Product whereBrandId($value)
  * @mixin \Eloquent
  */
 class Product extends Model implements Buyable {
@@ -60,26 +70,65 @@ class Product extends Model implements Buyable {
         'discount',
         'quantity',
         'thumbnail',
+        'brand_id',
     ];
-
-    public function images(): MorphMany {
-        return $this->morphMany( Image::class, 'imageable' );
+    public function scopeWithProductColor(Builder $query, int $colorId): Builder
+    {
+        return $query
+            ->select(['products.*', 'cp.price as price', 'cp.quantity as quantity', 'colors.id as color_id'])
+            ->leftJoin('color_product as cp', 'cp.product_id', '=', 'products.id')
+            ->leftJoin('colors', 'colors.id', '=', 'cp.color_id')
+            ->where('products.id', '=', $this->id)
+            ->where('colors.id', '=', $colorId);
     }
 
-    public function categories(): BelongsToMany {
-        return $this->belongsToMany( Category::class );
+
+    public function scopeWithColor(Builder $query, int $colorId): Builder
+    {
+        return $query
+            ->select(['products.*', 'cp.price as price', 'cp.quantity as quantity', 'colors.id as color_id'])
+            ->leftJoin('color_product as cp', 'cp.product_id', '=', 'products.id')
+            ->leftJoin('colors', 'colors.id', '=', 'cp.color_id')
+            ->where('colors.id', '=', $colorId);
+    }
+
+    public function images(): MorphMany
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class);
+    }
+
+    public function colors(): BelongsToMany
+    {
+        return $this->belongsToMany(Color::class)->withPivot( [ 'quantity', 'price' ]);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
     }
 
     public function thumbnailUrl(): Attribute
     {
         return Attribute::make(
-            get: function() {
-                if (!Storage::exists($this->attributes['thumbnail'])) {
+            get: function () {
+                if (strpos($this->attributes['thumbnail'], 'http') === 0) {
                     return $this->attributes['thumbnail'];
+                }
+                $key = "products.thumbnail.{$this->attributes['thumbnail']}";
+
+                if (!Cache::has($key)) {
+                    $link = Storage::temporaryUrl($this->attributes['thumbnail'], now()->addMinutes(10));
+                    Cache::put($key, $link, 570);
+                    return $link;
                 }
 
                 // public/images/.....png
-                return Storage::url($this->attributes['thumbnail']);
+                return Cache::get($key);
             }
         );
     }
@@ -95,6 +144,7 @@ class Product extends Model implements Buyable {
             $this->attributes['slug']
         );
     }
+
     public function price(): Attribute
     {
         return Attribute::get(fn() => round($this->attributes['price'], 2));
@@ -112,6 +162,11 @@ class Product extends Model implements Buyable {
 
             return $endPrice <= 0 ? 1 : round($endPrice, 2);
         });
+    }
+
+    public function scopeAvailable(Builder $query): Builder
+    {
+        return $query->where('products.quantity', '>', 0);
     }
 
     public function getBuyableIdentifier($options = null)
@@ -132,9 +187,5 @@ class Product extends Model implements Buyable {
     public function getBuyableWeight($options = null)
     {
         return 0;
-    }
-    public function scopeAvailable(Builder $query): Builder
-    {
-        return $query->where('quantity', '>', 0);
     }
 }
