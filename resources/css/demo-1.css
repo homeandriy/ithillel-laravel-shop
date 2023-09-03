@@ -5933,3 +5933,9 @@ i.gicon.gi-star.fill {
     font-size: 13px;
   }
 }
+.bt-toasts-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 9999
+}
