@@ -38,7 +38,7 @@ class CustomerNotification extends Notification {
         logs()->info( self::class );
 
         $invoice = $this->invoicesService->generate( $notifiable );
-
+        \App\Events\UserNotify::dispatch('<h2>Check you invoice <a href="'.Storage::disk( 'public' )->path( $invoice->filename ).'" target="_blank">there</a></h2>');
         return ( new MailMessage )
             ->subject( "Thank you $notifiable->name $notifiable->surname for buying product!" )
             ->greeting( "Hello, $notifiable->name $notifiable->surname" )

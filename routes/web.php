@@ -81,3 +81,7 @@ Route::name('cart.')->prefix('cart')->group(function() {
     Route::delete('/', [\App\Http\Controllers\CartController::class, 'remove'])->name('remove');
     Route::put('{product}/count', [\App\Http\Controllers\CartController::class, 'countUpdate'])->name('count.update');
 });
+
+Route::get('notification', function() {
+    \App\Events\UserNotify::dispatch('<h2>This is message from Broadcasting</h2>');
+});

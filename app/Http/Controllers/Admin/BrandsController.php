@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Models\Attributes\Brand;
-use Illuminate\Http\Request;
 use Str;
 
 class BrandsController extends Controller {
